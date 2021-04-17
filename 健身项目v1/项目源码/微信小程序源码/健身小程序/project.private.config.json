@@ -1,0 +1,29 @@
+{
+  "setting": {},
+  "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/exercise_list/index",
+          "pathName": "pages/exercise_list/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/logins/logins",
+          "pathName": "pages/logins/logins",
+          "scene": null
+        }
+      ]
+    }
+  }
+}

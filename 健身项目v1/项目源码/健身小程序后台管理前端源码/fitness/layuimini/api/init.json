@@ -1,0 +1,105 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "page/welcome-1.html"
+  },
+  "logoInfo": {
+    "title": "后台管理系统",
+    "image": "images/logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "常规管理",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "栏目管理",
+          "href": "",
+          "icon": "fa fa-navicon",
+          "target": "_self",
+          "child": [
+			{
+			  "title": "栏目",
+			  "href": "page/section/section.html",
+			  "icon": "fa fa-pencil-square-o",
+			  "target": "_self"
+			}
+          ]
+        },
+		{
+		  "title": "课程栏目管理",
+		  "href": "",
+		  "icon": "fa fa-navicon",
+		  "target": "_self",
+		  "child": [
+			{
+			  "title": "课程栏目",
+			  "href": "page/courseSection/courseSection.html",
+			  "icon": "fa fa-pencil-square-o",
+			  "target": "_self"
+			}
+		  ]
+		},
+		{
+		  "title": "课程管理",
+		  "href": "",
+		  "icon": "fa fa-navicon",
+		  "target": "_self",
+		  "child": [
+			{
+			  "title": "课程",
+			  "href": "page/course/course.html",
+			  "icon": "fa fa-pencil-square-o",
+			  "target": "_self"
+			}
+		  ]
+		},
+		{
+		  "title": "课程简要介绍",
+		  "href": "",
+		  "icon": "fa fa-navicon",
+		  "target": "_self",
+		  "child": [
+			{
+			  "title": "简要介绍",
+			  "href": "page/courseIntroduction/courseIntroduction.html",
+			  "icon": "fa fa-pencil-square-o",
+			  "target": "_self"
+			}
+		  ]
+		},
+		{
+		  "title": "课程子模块",
+		  "href": "",
+		  "icon": "fa fa-navicon",
+		  "target": "_self",
+		  "child": [
+			{
+			  "title": "子模块",
+			  "href": "page/courseSubmodule/courseSubmodule.html",
+			  "icon": "fa fa-pencil-square-o",
+			  "target": "_self"
+			}
+		  ]
+		},
+		{
+		  "title": "课程内容详情",
+		  "href": "",
+		  "icon": "fa fa-navicon",
+		  "target": "_self",
+		  "child": [
+			{
+			  "title": "内容详情",
+			  "href": "page/courseDetails/courseDetails.html",
+			  "icon": "fa fa-pencil-square-o",
+			  "target": "_self"
+			}
+		  ]
+		}
+      ]
+    }
+  ]
+}

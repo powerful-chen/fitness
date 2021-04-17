@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chen.mapper.CourseDetailsMapper">
+
+    <select id="getCourseDetailsById" resultType="courseDetails">
+        select * from fitness.course_details where course_sub_id = #{courseSubId}
+    </select>
+
+    <select id="getCourseDetails" resultType="courseDetails">
+        select * from fitness.course_details
+    </select>
+
+    <select id="getCourseDetailsByLimit" resultType="courseDetails">
+        select cd.*,c_sub.course_sub_title as title from course_details cd,course_submodule c_sub
+        where c_sub.course_sub_id=cd.course_sub_id limit #{page},#{limit}
+    </select>
+
+    <select id="countNums" resultType="int">
+        select count(cd.course_content_id) from course_details cd,course_submodule c_sub
+        where c_sub.course_sub_id=cd.course_sub_id
+    </select>
+
+    <insert id="addCourseDetails" parameterType="courseDetails">
+        insert into fitness.course_details (course_sub_id, image_name, step, breathe, feel, fault, tip)
+        values (#{courseSubId},#{imageName},#{step},#{breathe},#{feel},#{fault},#{tip});
+    </insert>
+
+    <update id="updateCourseDetails" parameterType="courseDetails">
+        update fitness.course_details
+        <set>
+            <if test="courseSubId!=null">
+                course_sub_id = #{courseSubId},
+            </if>
+            <if test="imageName!=null and imageName!=''">
+                image_name = #{imageName},
+            </if>
+            <if test="step!=null and step!=''">
+                step = #{step},
+            </if>
+            <if test="breathe!=null and breathe!=''">
+                breathe = #{breathe},
+            </if>
+            <if test="feel!=null and feel!=''">
+                feel = #{feel},
+            </if>
+            <if test="fault!=null and fault!=''">
+                fault = #{fault},
+            </if>
+            <if test="tip!=null and tip!=''">
+                tip = #{tip},
+            </if>
+        </set>
+        where course_content_id = #{courseContentId}
+    </update>
+
+    <delete id="deleteCourseDetails">
+        delete from course_details where course_content_id = #{courseContentId}
+    </delete>
+</mapper>

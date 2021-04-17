@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chen.mapper.CourseIntroductionMapper">
+
+    <select id="getCourseIntroductionById" resultType="courseIntroduction">
+        select * from fitness.course_introduction where course_id = #{courseId}
+    </select>
+
+    <select id="getCourseIntroduction" resultType="courseIntroduction">
+        select * from fitness.course_introduction
+    </select>
+
+    <select id="getCourseIntroductionByLimit" resultType="courseIntroduction">
+        select ci.*,cs.course_section_name as course_name
+        from course_introduction ci,course c,course_section cs
+        where ci.course_id=c.course_id and cs.course_section_id=c.course_section_id limit #{page},#{limit}
+    </select>
+
+    <select id="countNums" resultType="int">
+        select count(ci.course_id)
+        from course_introduction ci,course c
+        where ci.course_id=c.course_id
+    </select>
+
+    <insert id="addCourseIntroduction" parameterType="courseIntroduction">
+        insert into fitness.course_introduction (course_id, course_intro_detail, course_intro_type, fit_crowd, taboo_crowd, prepare, physical_reaction, advice)
+        values (#{courseId},#{courseIntroDetail},#{courseIntroType},#{fitCrowd},#{tabooCrowd},#{prepare},#{physicalReaction},#{advice});
+    </insert>
+    
+    <update id="updateCourseIntroduction" parameterType="courseIntroduction">
+        update fitness.course_introduction
+        <set>
+            <if test="courseId!=null">
+                course_id = #{courseId},
+            </if>
+            <if test="courseIntroDetail!=null and courseIntroDetail!=''">
+                course_intro_detail = #{courseIntroDetail},
+            </if>
+            <if test="courseIntroType!=null and courseIntroType!=''">
+                course_intro_type = #{courseIntroType},
+            </if>
+            <if test="fitCrowd!=null and fitCrowd!=''">
+                fit_crowd = #{fitCrowd},
+            </if>
+            <if test="tabooCrowd!=null and tabooCrowd!=''">
+                taboo_crowd = #{tabooCrowd},
+            </if>
+            <if test="prepare!=null and prepare!=''">
+                prepare = #{prepare},
+            </if>
+            <if test="physicalReaction!=null and physicalReaction!=''">
+                physical_reaction = #{physicalReaction},
+            </if>
+            <if test="advice!=null and advice!=''">
+                advice = #{advice},
+            </if>
+
+        </set>
+        where course_intro_id = #{courseIntroId}
+    </update>
+
+    <delete id="deleteCourseIntroduction">
+        delete from course_introduction where course_intro_id = #{courseIntroId}
+    </delete>
+</mapper>

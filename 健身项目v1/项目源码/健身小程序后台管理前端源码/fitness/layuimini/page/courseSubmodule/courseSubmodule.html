@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="batchDelete"> 批量删除 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+    </div>
+</div>
+
+<!-- 添加和修改栏目的弹出层开始 -->
+<div id="addOrUpdateSectionDiv" style="display: none;margin: 10px">
+    <form id="dataFrm" method="post" class="layui-form  layui-form-pane" lay-filter="dataFrm">
+        <!-- 隐藏域，保存当前栏目的ID -->
+        <input type="hidden" name="courseSubId">
+		<div class="layui-upload">
+		  <button type="button" class="layui-btn" id="upImg">上传图片</button>
+		  <div class="layui-upload-list">
+		    <img class="layui-upload-img" id="thumb">
+			<input name="thumbName" class="layui-input" placeholder="选择上方图片后地址自动显示" id="thumbName" disabled title="不可更改">
+		    <p id="demoText"></p>
+		  </div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">标题</label>
+			<div class="layui-input-block">
+				<input type="text" name="courseSubTitle" placeholder="请输入标题" lay-verify="required" lay-reqText="请输入标题"  autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">训练次数/时长</label>
+			<div class="layui-input-block">
+				<input type="text" name="trainingTime" placeholder="请输入训练次数/时长" lay-verify="required" lay-reqText="请输入训练次数/时长"  autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		
+		<div class="layui-inline">
+			<label class="layui-form-label">课程栏目名</label>
+			<div class="layui-input-inline">
+				<select name="courseId" class="layui-input">
+					<option value="">请选择课程栏目名</option>
+				</select>
+			</div>
+		</div>
+		
+        <div class="layui-form-item" style="text-align: center;">
+            <button type="button" class="layui-btn" lay-submit lay-filter="doSubmit">提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+</div>
+<!-- 添加和修改栏目的弹出层结束-->
+
+
+<style type="text/css">
+/* 设置layui图片样式 */
+.layui-table-cell{
+	text-align:center;
+	height: auto;
+	white-space: normal;
+}
+
+</style>
+
+<script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table','layer','upload'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+			layer = layui.layer,
+			upload = layui.upload,
+            table = layui.table;
+
+        var tableIns =table.render({
+            elem: '#currentTableId',
+            url: 'http://localhost:8080/c_sub/limit',
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [[
+                {type: "checkbox", width: 50,style:"height:120px"},
+                {field: 'courseSubId', title: '子模块ID',align: "center",hide: true},
+                {field: 'courseId', title: '课程ID',align: "center",hide: true},
+                // {field: 'thumbName', title: '图片',templet:'<div><img src="{{d.thumbName}}">'},
+				{field: 'thumbName', title: '图片',templet:function(d){
+					return d.thumbName != 'http://localhost:8080/api/file/'?'<div><img src='+d.thumbName+'>' : '<div><img src=http://localhost:8080/api/file/index.jpg>'
+				}},
+                {field: 'courseSubTitle', title: '标题',align: "center"},
+                {field: 'trainingTime', title: '训练次数/时长',align: "center"},
+                {field: 'courseName', title: '所属课程',align: "center"},
+                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            page: true,
+            skin: 'line'
+        });
+		
+		//普通图片上传，选择文件后会自动上传到后端，然后返回一个新的文件名，赋值表单
+		var uploadInst = upload.render({
+		  elem: '#upImg'
+		  ,url: 'http://localhost:8080/imageName' //改成您自己的上传接口
+		  ,before: function(obj){
+		    //预读本地文件示例，不支持ie8
+				  console.log(obj);
+		    obj.preview(function(index, file, result){
+		      $('#thumb').attr('src', result); //图片链接（base64）
+					$('#thumb').css('width',92);
+					$('#thumb').css('height',92);
+		    });
+		  }
+		  ,done: function(res){
+		    //上传成功
+		    if(res.code == 0){
+		      layer.msg('上传图片成功');
+					
+					$('#thumbName').val(res.data);
+		    }else{
+					  
+					  //如果上传失败
+					  return layer.msg('上传图片失败');
+				  }
+		    
+		  }
+		  ,error: function(){
+		    //演示失败状态，并实现重传
+		    var demoText = $('#demoText');
+		    demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+		    demoText.find('.demo-reload').on('click', function(){
+		      uploadInst.upload();
+		    });
+		  }
+		});
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = JSON.stringify(data.field);
+            layer.alert(result, {
+                title: '最终的搜索信息'
+            });
+
+            //执行搜索重载
+            table.reload('currentTableId', {
+                page: {
+                    curr: 1
+                }
+                , where: {
+                    searchParams: result
+                }
+            }, 'data');
+
+            return false;
+        });
+		
+		//发送Ajax请求查询课程栏目名
+		$.get("http://localhost:8080/course/list",function(result){
+			var html = "";
+			//循环遍历集合
+			for (let i = 0; i < result.length; i++) {
+				html +="<option value='"+result[i].courseId+"'>"+result[i].courseSectionName+"</option>"
+			}
+			//将网页代码追加到下拉列表中
+			$("[name='courseId']").append(html);
+			//更新渲染select下拉框
+			form.render("select");
+		},"json");
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+			switch (obj.event) {
+				//添加
+				case 'add':
+					openAddWindow();
+					break;
+				//批量删除
+				case 'batchDelete':
+					batchDelete();
+					break;
+			}
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(currentTableFilter)', function (obj) {
+            console.log(obj)
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+			switch (obj.event) {
+				//编辑
+				case 'edit':
+					openUpdateWindow(obj.data);
+					break;
+				//删除
+				case 'delete':
+					deleteById(obj.data);
+					break;
+			}
+        });
+		var url;//提交地址
+		var mainIndex;//窗口索引
+		
+		/**
+		 * 打开添加窗口
+		 */
+		function openAddWindow() {
+			$('#thumb').attr('src','http://localhost:8080/api/file/index.jpg');
+			$('#thumb').css('width',92);
+			$('#thumb').css('height',92);
+			mainIndex =layer.open({
+				type:1,//弹出层类型
+				title:"添加栏目",
+				area: ['800px', '600px'],
+				content:$("#addOrUpdateSectionDiv"),//引用的窗口代码
+				success:function () {
+					//清空表单数据
+					$("#dataFrm")[0].reset();//JavaScript中的方法
+					url = "http://localhost:8080/c_sub/add";
+				}
+			});
+		}
+		/**
+		 * 打开编辑窗口
+		 */
+		function openUpdateWindow(data) {
+			$('#thumb').attr('src',data.thumbName);
+			$('#thumb').css('width',92);
+			$('#thumb').css('height',92);
+			var thumbName= data.thumbName;
+			var index = thumbName.lastIndexOf('\/');
+			thumbName = thumbName.substring(index+1,thumbName.length);
+			data.thumbName=thumbName;
+			mainIndex =layer.open({
+				type:1,//弹出层类型
+				title:"修改栏目",
+				area: ['800px', '600px'],
+				content:$("#addOrUpdateSectionDiv"),//引用的窗口代码
+				success:function () {
+					//表单数据回显
+					form.val("dataFrm",data);
+
+					//修改请求
+					url = "http://localhost:8080/c_sub/edit";
+				}
+			});
+		}
+		//监听表单提交事件
+		form.on("submit(doSubmit)",function (data) {
+			$.post(url,data.field,function(result){
+				if(result.success){
+					layer.alert(result.message,{icon:1});
+					//关闭窗口
+					layer.close(mainIndex);
+					//刷新数据表格
+					tableIns.reload();
+				}else{
+					layer.alert(result.message,{icon:2});
+				}
+			},"json");
+			return false;
+		});
+		
+		/**
+		 * 删除栏目
+		 * @param data  当前行数据
+		 */
+		function deleteById(data) {
+			//提示用户确认是否删除
+			layer.confirm("确定要删除[<font color='red'>"+data.courseSubTitle+"</font>]吗？",{icon:3,title:"提示"},function (index) {
+				//发送ajax请求
+				$.post("http://localhost:8080/c_sub/delete",{"id":data.courseSubId},function(result){
+					if(result.success){
+						layer.alert(result.message,{icon:1});
+						//刷新数据表格
+						tableIns.reload();
+					}else{
+						layer.alert(result.message,{icon:2});
+					}
+				},"json");
+
+				//关闭提示框
+				layer.close(index);
+			});
+		}
+
+		/**
+		 * 批量删除
+		 */
+		function batchDelete() {
+			//获取表格对象
+			var checkStatus = table.checkStatus('currentTableId'); //billTable 即为基础参数 id 对应的值
+			//判断是否有选中行
+			if(checkStatus.data.length>0){
+				//定义数组，保存选中行的ID
+				var idArr = [];
+				//循环遍历获取选中行(目的是获取选中的每一行的ID值)
+				for (let i = 0; i < checkStatus.data.length; i++) {
+					//将选中的ID值添加到数组的末尾
+					idArr.push(checkStatus.data[i].courseSubId);
+				}
+				//将数组转成字符串
+				var ids = idArr.join(",");
+				//提示用户是否删除
+				layer.confirm("确定要删除这<font color='red'>"+checkStatus.data.length+"</font>条数据吗？",{icon:3,title:"提示"},function (index) {
+					//发送ajax请求
+					$.post("http://localhost:8080/c_sub/batchDelete",{"ids":ids},function(result){
+						if(result.success){
+							layer.alert(result.message,{icon:1});
+							//刷新数据表格
+							tableIns.reload();
+						}else{
+							layer.alert(result.message,{icon:2});
+						}
+					},"json");
+
+					//关闭提示框
+					layer.close(index);
+				});
+
+
+			}else{
+				layer.msg("请选择要删除的数据");
+			}
+
+		}
+    });
+</script>
+
+</body>
+</html>

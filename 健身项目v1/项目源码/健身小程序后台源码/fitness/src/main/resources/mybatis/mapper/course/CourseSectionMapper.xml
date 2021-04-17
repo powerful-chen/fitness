@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chen.mapper.CourseSectionMapper">
+
+    <select id="getCourseSectionById" resultType="courseSection">
+        select cs.*,c.background_image_name as background_image from course_section cs,course c where cs.section_id = #{sectionId};
+    </select>
+
+    <select id="getCourseSection" resultType="courseSection">
+        select * from fitness.course_section;
+    </select>
+
+    <select id="getCourseSectionByLimit" resultType="courseSection">
+        select cs.*,s.section_name as section_name
+        from course_section cs,section s
+        where cs.section_id=s.section_id limit #{page},#{limit}
+    </select>
+
+    <select id="countNums" resultType="int">
+        select count(s.section_id)
+        from course_section cs,section s
+        where cs.section_id=s.section_id
+    </select>
+
+    <insert id="addCourseSection" parameterType="courseSection">
+        insert into fitness.course_section (section_id, course_section_tip, course_section_name) values (#{sectionId},#{courseSectionTip},#{courseSectionName});
+    </insert>
+    
+    <update id="updateCourseSection" parameterType="courseSection">
+        update fitness.course_section
+        <set>
+            <if test="sectionId!=null">
+                section_id = #{sectionId},
+            </if>
+            <if test="courseSectionTip!=null and courseSectionTip!=''">
+                course_section_tip = #{courseSectionTip},
+            </if>
+            <if test="courseSectionName!=null and courseSectionName!=''">
+                course_section_name = #{courseSectionName},
+            </if>
+        </set>
+        where course_section_id = #{courseSectionId}
+    </update>
+
+    <delete id="deleteCourseSection">
+        delete from course_section where course_section_id = #{courseSectionId}
+    </delete>
+</mapper>

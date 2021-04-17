@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chen.mapper.CourseSubmoduleMapper">
+
+    <select id="getCourseSubmodulebyId" resultType="courseSubmodule">
+        select * from fitness.course_submodule where course_id = #{courseId}
+    </select>
+
+    <select id="getCourseSubmodule" resultType="courseSubmodule">
+        select * from fitness.course_submodule
+    </select>
+
+    <select id="getCourseSubmoduleByLimit" resultType="courseSubmodule">
+        SELECT c_sub.*,cs.course_section_name as course_name
+        from course_submodule c_sub,course c,course_section cs
+        where c_sub.course_id=c.course_id and c.course_section_id=cs.course_section_id limit #{page},#{limit}
+    </select>
+
+    <select id="countNums" resultType="int">
+        select count(c_sub.course_id)
+        from course_submodule c_sub,course c
+        where c_sub.course_id=c.course_id
+    </select>
+
+    <insert id="addCourseSubmodule" parameterType="courseSubmodule">
+        insert into fitness.course_submodule (course_id, thumb_name, course_sub_title, training_time)
+        values (#{courseId},#{thumbName},#{courseSubTitle},#{trainingTime});
+    </insert>
+    
+    <update id="updateCourseSubmodule" parameterType="courseSubmodule">
+        update fitness.course_submodule
+        <set>
+            <if test="courseId!=null">
+                course_id = #{courseId},
+            </if>
+            <if test="thumbName!=null and thumbName!=''">
+                thumb_name = #{thumbName},
+            </if>
+            <if test="courseSubTitle!=null and courseSubTitle!=''">
+                course_sub_title = #{courseSubTitle},
+            </if>
+            <if test="trainingTime!=null and trainingTime!=''">
+                training_time = #{trainingTime},
+            </if>
+        </set>
+        where course_sub_id = #{courseSubId}
+    </update>
+
+    <delete id="deleteCourseSubmodule">
+        delete from course_submodule where course_sub_id = #{courseSubId}
+    </delete>
+</mapper>

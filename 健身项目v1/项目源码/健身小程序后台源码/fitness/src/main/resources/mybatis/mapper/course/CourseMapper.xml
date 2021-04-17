@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chen.mapper.CourseMapper">
+
+    <select id="getCoursesById" resultType="course">
+        select c.*,cs.course_section_name as course_section_name from course c,course_section cs
+        where cs.course_section_id=c.course_section_id and c.course_section_id=#{courseSectionId}
+    </select>
+
+    <select id="getCourses" resultType="course">
+        select c.*,cs.course_section_name as course_section_name from course c,course_section cs
+        where cs.course_section_id=c.course_section_id
+    </select>
+    <select id="getCourseByLimit" resultType="course">
+        select c.*,cs.course_section_name as course_section_name from course c,course_section cs
+        where cs.course_section_id=c.course_section_id limit #{page},#{limit}
+    </select>
+
+    <select id="countNums" resultType="int">
+        select count(c.course_id)
+        from course_section cs,course c
+        where cs.course_section_id=c.course_section_id
+    </select>
+
+    <insert id="addCourse" parameterType="course">
+        insert into fitness.course (course_section_id,calories,intensity,times,training_frequency,background_image_name)
+        values (#{courseSectionId},#{calories},#{intensity},#{times},#{trainingFrequency},#{backgroundImageName});
+    </insert>
+
+    <update id="updateCourse" parameterType="course">
+        update fitness.course
+        <set>
+            <if test="courseSectionId!=null">
+                course_section_id = #{courseSectionId},
+            </if>
+            <if test="calories!=null and calories!=''">
+                calories = #{calories},
+            </if>
+            <if test="intensity!=null and intensity!=''">
+                intensity = #{intensity},
+            </if>
+            <if test="times!=null and times!=''">
+                times = #{times},
+            </if>
+            <if test="trainingFrequency!=null and trainingFrequency!=''">
+                training_frequency = #{trainingFrequency},
+            </if>
+            <if test="backgroundImageName!=null and backgroundImageName!=''">
+                background_image_name = #{backgroundImageName},
+            </if>
+        </set>
+        where course_id = #{courseId}
+    </update>
+
+    <delete id="deleteCourse">
+        delete from course where course_id = #{courseId}
+    </delete>
+</mapper>

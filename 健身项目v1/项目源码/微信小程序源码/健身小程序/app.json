@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/logins/logins",
+    "pages/register/register",
+    "pages/exercise_list/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Weixin",
+    "navigationBarTextStyle": "black"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
